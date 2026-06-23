@@ -102,6 +102,70 @@ This project builds an Airbus-focused strategic intelligence assistant. It colle
 
 ### System Architecture Diagram
 
+
+```mermaid
+flowchart LR
+    subgraph DataLayer[Data Layer]
+        A1[Live Sources]
+        A2[Raw JSONL]
+        A3[Clean JSONL]
+    end
+
+    subgraph ProcessingLayer[Processing Layer]
+        B1[Scrapers]
+        B2[Cleaning + Deduplication]
+        B3[Topic Classification]
+        B4[Chunking]
+    end
+
+    subgraph VectorLayer[Vector Search Layer]
+        C1[BGE Embedding Model]
+        C2[ChromaDB Vector Store]
+        C3[Retriever]
+        C4[Cross-Encoder Reranker]
+    end
+
+    subgraph IntelligenceLayer[Strategic Intelligence Layer]
+        D1[Opportunity Detector]
+        D2[Risk Detector]
+        D3[Trend Detector]
+        D4[Priority Scoring]
+    end
+
+    subgraph AgentLayer[AI CEO Agent Layer]
+        E1[Prompt Builder]
+        E2[Llama 3.1 8B]
+        E3[Strategic Recommendations]
+        E4[CEO Briefing]
+    end
+
+    subgraph UILayer[Presentation Layer]
+        F1[Streamlit Dashboard]
+        F2[Charts]
+        F3[Opportunity/Risk/Trend Cards]
+        F4[Downloadable Report]
+    end
+
+    A1 --> B1 --> A2 --> B2 --> B3 --> B4 --> A3
+    A3 --> C1 --> C2
+    C2 --> C3 --> C4
+    C4 --> D1
+    C4 --> D2
+    C4 --> D3
+    D1 --> D4
+    D2 --> D4
+    D3 --> D4
+    D4 --> E1
+    C4 --> E1
+    E1 --> E2 --> E3
+    E2 --> E4
+    E3 --> F1
+    E4 --> F1
+    F1 --> F2
+    F1 --> F3
+    F1 --> F4
+```
+
 ```mermaid
 flowchart TB
     subgraph ExternalSources["External Data Sources"]
