@@ -1,0 +1,9 @@
+requests>=2.31
+beautifulsoup4>=4.12
+feedparser>=6.0
+yfinance>=0.2.40
+python-dotenv>=1.0
+chromadb
+sentence-transformers
+torch
+streamlit

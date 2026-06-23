@@ -1,0 +1,29 @@
+# Virtual environment
+.venv/
+
+# Python
+__pycache__/
+*.pyc
+
+# ChromaDB
+VectorDB/chroma_store/
+
+# Generated data
+DataScraping/data/raw/*.jsonl
+DataScraping/data/raw/*.csv
+DataCleaning/data/processed/*.jsonl
+
+# Reports
+reports/
+latest_report.json
+progress.json
+
+# Environment
+.env
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
