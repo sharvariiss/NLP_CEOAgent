@@ -1,118 +1,411 @@
-# ✈️ Airbus Strategic Intelligence Engine
+# ✈️ Airbus Autonomous Strategic Intelligence CEO Agent
 
-An AI-powered Strategic Intelligence Agent that collects live data about Airbus, analyzes it for opportunities, risks and trends, and generates executive-level CEO briefings via a Streamlit dashboard.
+An autonomous AI agent that continuously analyzes Airbus using Retrieval-Augmented Generation (RAG), strategic reasoning, and LLM-powered decision making.
 
-> *"If you were the CEO today, what would you do next and why?"*
+Instead of acting as a simple chatbot, the system follows an agentic workflow that plans, retrieves evidence, analyzes market intelligence, validates its reasoning, and produces executive-level strategic recommendations.
 
 ---
 
-## System Architecture
+# Overview
+
+This project was developed as an autonomous AI agent for strategic business intelligence.
+
+The system collects information from multiple trusted sources including Airbus, aviation news, academic publications, and financial markets. After preprocessing and indexing the knowledge base, the CEO Agent autonomously reasons over the available evidence to identify:
+
+- Strategic opportunities
+- Business risks
+- Technology trends
+- Competitive intelligence
+- Executive recommendations
+
+A Streamlit dashboard provides interactive visualizations together with a live Q&A interface.
+
+---
+
+# Features
+
+- Autonomous multi-step CEO Agent
+- Retrieval-Augmented Generation (RAG)
+- Semantic search using ChromaDB
+- Cross-Encoder reranking
+- Llama 3.1 powered reasoning
+- Executive recommendation generation
+- Market intelligence dashboard
+- Interactive strategic Q&A
+- Company sentiment analysis
+- Competitor monitoring
+- Financial overview
+- Modular architecture
+
+---
+
+# System Architecture
 
 ```mermaid
-flowchart LR
-    subgraph Sources
-        A1[Airbus.com] & A2[Leeham RSS] & A3[Guardian API] & A4[OpenAlex] & A5[yfinance]
+flowchart TD
+    subgraph Sources["🌐 Data Sources"]
+        S1[Airbus.com] & S2[Leeham RSS] & S3[Guardian API] & S4[OpenAlex] & S5[yfinance AIR.PA]
     end
 
-    subgraph Pipeline
-        B1[Scrape & Collect] --> B2[Clean & Chunk] --> B3[Embed & Index]
+    subgraph Processing["⚙️ Processing Pipeline"]
+        P1[Clean & Chunk]
+        P2[Generate Embeddings]
+        P3[Index into ChromaDB]
     end
 
-    subgraph Intelligence
-        C1[ChromaDB] --> C2[Retrieve] --> C3[Rerank] --> C4[Analyze Signals]
-    end
+    subgraph Agent["🤖 Autonomous CEO Agent"]
 
-    subgraph Agent
-        D1[Prompt Builder] --> D2[Llama 3.1 8B] --> D3[CEO Report JSON]
+        A1[Goal]
+        A2[Planning]
+
+        A1 --> A2
+
+        A2 --> T1
+        A2 --> T2
+        A2 --> T3
+        A2 --> T4
+
+        subgraph Tools
+            T1[Retrieve Opportunities]
+            T2[Retrieve Risks]
+            T3[Retrieve Trends]
+            T4[Retrieve Competitors]
+        end
+
+        T1 --> DB[(ChromaDB)]
+        T2 --> DB
+        T3 --> DB
+        T4 --> DB
+
+        DB --> RR[Cross Encoder Reranker]
+
+        RR --> A3[Analysis]
+
+        A3 --> A4[Decision]
+
+        A4 --> A5[Recommendation]
+
+        A5 --> A6[Validation]
+
+        A6 -->|Retry| A5
+        A6 --> Report[Strategic Report]
     end
 
     subgraph Dashboard
-        E1[Streamlit] --> E2[Charts & Feeds] & E3[Opportunity/Risk Cards] & E4[CEO Briefing]
+        D1[Overview]
+        D2[Market Intelligence]
+        D3[Opportunities]
+        D4[Risks]
+        D5[Sentiment]
+        D6[Recommendations]
+        D7[CEO Briefing]
+        D8[Live Q&A]
     end
 
-    Sources --> Pipeline --> Intelligence --> Agent --> Dashboard
+    Sources --> Processing
+    Processing --> Agent
+    Agent --> Dashboard
 ```
 
 ---
 
-## Data Flow
+# Data Sources
 
-```mermaid
-sequenceDiagram
-    participant S as 5 External Sources
-    participant C as DataScraping
-    participant P as DataCleaning
-    participant V as ChromaDB
-    participant R as RAG + Reranker
-    participant L as Llama 3.1
-    participant D as Dashboard
+The knowledge base is automatically built using multiple trusted sources.
 
-    S->>C: Fetch pages, RSS, APIs, stock data
-    C->>P: Raw JSONL + stock CSV
-    P->>P: Clean, deduplicate, chunk, tag topics
-    P->>V: Embed with BGE → store in ChromaDB
-    V->>R: Retrieve + rerank top evidence
-    R->>R: Score opportunities, risks, trends
-    R->>L: Build executive prompt → generate report
-    L->>D: Save latest_report.json
-    D->>D: Render KPIs, charts, feeds, briefing
+| Source | Purpose |
+|---------|----------|
+| Airbus Official Website | Company announcements |
+| Leeham News | Aviation industry news |
+| Guardian API | Global news |
+| OpenAlex | Research publications |
+| Yahoo Finance | Airbus stock data |
+
+---
+
+# Processing Pipeline
+
+The processing stage prepares raw information for semantic retrieval.
+
+```
+Raw Documents
+      │
+      ▼
+Cleaning
+      │
+      ▼
+Chunking
+      │
+      ▼
+Embedding Generation
+(BAAI/bge-small-en-v1.5)
+      │
+      ▼
+ChromaDB Vector Store
+```
+
+Current knowledge base:
+
+- **725 documents**
+- **583 indexed chunks**
+
+---
+
+# Autonomous CEO Agent Workflow
+
+Unlike traditional RAG systems, this project follows an autonomous reasoning loop.
+
+## 1. Goal
+
+Receive a strategic objective.
+
+Example:
+
+> Analyze Airbus' strategic position.
+
+---
+
+## 2. Planning
+
+Break the objective into multiple retrieval tasks.
+
+- Opportunities
+- Risks
+- Competitors
+- Technology
+- Sustainability
+
+---
+
+## 3. Evidence Retrieval
+
+Each tool independently queries the vector database.
+
+```
+Opportunity Retriever
+
+Risk Retriever
+
+Competitor Retriever
+
+Trend Retriever
 ```
 
 ---
 
-## Technology Stack
+## 4. Reranking
 
-| Layer | Technology | Purpose |
-|---|---|---|
-| Data Collection | requests, BeautifulSoup, feedparser, yfinance | Scrape 5 live sources |
-| Storage | JSONL, CSV, ChromaDB | Raw data, cleaned chunks, vector index |
-| Embeddings | `BAAI/bge-small-en-v1.5` | Dense vector representation of chunks |
-| Reranking | `cross-encoder/ms-marco-MiniLM-L-6-v2` | Improve evidence quality before prompting |
-| Strategic Analysis | Keyword-weight scoring | Classify evidence into opportunities, risks, trends |
-| LLM | Ollama · `llama3.1:8b` | Local CEO report generation |
-| Sentiment | TextBlob | Polarity scoring across corpus |
-| Dashboard | Streamlit, Plotly, pandas | Executive UI with charts and downloadable reports |
+Retrieved chunks are reranked using a Cross Encoder.
+
+This improves retrieval quality before reasoning.
 
 ---
 
-## AI Pipeline
+## 5. Strategic Analysis
 
-```mermaid
-flowchart LR
-    Q[Broad Strategic Query] --> R[Embed & Retrieve from ChromaDB]
-    R --> S[Cross-Encoder Rerank]
-    S --> T[Score Opportunities / Risks / Trends]
-    T --> U[Build Executive Prompt]
-    U --> V[Llama 3.1 8B]
-    V --> W[latest_report.json]
-    W --> X[Streamlit Dashboard]
-```
+Llama 3.1 analyzes evidence to identify
 
-1. `DataScraping/run_collection.py` collects Airbus-related data and writes source-specific JSONL files plus `all_documents.jsonl`.
-2. `DataCleaning/data_clean.py` removes boilerplate, drops low-quality or irrelevant documents, deduplicates titles, assigns strategic topics, and creates retrieval-ready chunks.
-3. `VectorDB/store_to_chroma.py` embeds each cleaned chunk with `BAAI/bge-small-en-v1.5` and stores the chunk text, metadata, and vector in ChromaDB.
-
-#### Runtime RAG and Agent Pipeline
-
-```mermaid
-flowchart LR
-    Q["Strategic query"] --> R["Embed query"]
-    R --> S["Retrieve top candidates from ChromaDB"]
-    S --> T["Deduplicate by title"]
-    T --> U["Cross-encoder rerank"]
-    U --> V["Opportunity/risk/trend scoring"]
-    V --> W["Build executive prompt"]
-    W --> X["Generate report with llama3.1:8b"]
-    X --> Y["Save reports/latest_report.json"]
-    Y --> Z["Display in Streamlit dashboard"]
-```
-
-- `RAG/retriever.py` embeds the query and retrieves matching chunks from ChromaDB.
-- `RAG/reranker.py` reranks candidate chunks using `cross-encoder/ms-marco-MiniLM-L-6-v2`.
-- `StrategicIntelligenceEngine/strategic_analyzer.py` scores chunks for opportunities, risks, and trends using weighted strategic keywords.
-- `RAG/prompt_builder.py` builds a structured CEO-report prompt with evidence snippets and detected intelligence signals.
-- `CEOAgent/ceo_agent.py` runs the autonomous strategic query and calls the local LLM through `CEOAgent/llm_agent.py`.
-- `generate_report.py` saves the generated report and supporting evidence to `reports/latest_report.json`.
-- `Dashboard/app.py` displays the report, opportunities, risks, trends, recommendations, sentiment analysis, stock chart, source mix, and recent intelligence feeds.
+- emerging risks
+- market opportunities
+- technology trends
+- competitive insights
 
 ---
+
+## 6. Decision
+
+The agent evaluates whether enough evidence has been collected.
+
+If not:
+
+- retrieve again
+- refine reasoning
+
+---
+
+## 7. Recommendation
+
+Generate executive-level recommendations.
+
+Examples:
+
+- Invest
+- Monitor
+- Partner
+- Mitigate risk
+- Expand research
+
+---
+
+## 8. Validation
+
+The generated report is evaluated.
+
+If quality is insufficient:
+
+- regenerate
+- retry (maximum 3 iterations)
+
+Otherwise the report is exported.
+
+---
+
+# Dashboard
+
+The Streamlit dashboard contains:
+
+- Company Overview
+- Market Intelligence
+- Opportunities
+- Risks
+- Industry Trends
+- Sentiment Analysis
+- CEO Recommendations
+- Executive Briefing
+- Live Strategic Q&A
+
+---
+
+# Live Q&A
+
+The dashboard also includes an interactive RAG-powered assistant.
+
+Pipeline:
+
+```
+User Question
+
+↓
+
+Retriever
+
+↓
+
+Cross Encoder Reranker
+
+↓
+
+Context Construction
+
+↓
+
+Llama 3.1
+
+↓
+
+Answer with Sources
+```
+
+Example questions:
+
+- What is Airbus doing with hydrogen aircraft?
+- What are Airbus' biggest supply chain risks?
+- What AI initiatives is Airbus pursuing?
+- How is Airbus competing with Boeing?
+- What sustainability trends should Airbus monitor?
+
+---
+
+# Project Structure
+
+```
+.
+├── CEOAgent/
+│   ├── goal.py
+│   ├── planner.py
+│   ├── analyzer.py
+│   ├── decision.py
+│   ├── recommender.py
+│   ├── validator.py
+│   └── llm_agent.py
+│
+├── RAG/
+│   ├── retriever.py
+│   ├── reranker.py
+│   ├── embeddings.py
+│   └── vectorstore.py
+│
+├── Dashboard/
+│   ├── app.py
+│   ├── qa_page.py
+│   ├── overview.py
+│   └── pages/
+│
+├── DataScraping/
+│
+├── data/
+│
+├── reports/
+│
+└── README.md
+```
+
+---
+
+# Technology Stack
+
+| Category | Technology |
+|-----------|------------|
+| Language | Python |
+| Dashboard | Streamlit |
+| LLM | Llama 3.1 8B (Ollama) |
+| Embeddings | BAAI/bge-small-en-v1.5 |
+| Vector Database | ChromaDB |
+| Reranker | Cross Encoder |
+| Data Collection | BeautifulSoup, RSS, APIs |
+| Financial Data | yfinance |
+
+---
+
+# Installation
+
+Clone the repository
+
+```bash
+git clone <repository_url>
+```
+
+Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+Start Ollama
+
+```bash
+ollama run llama3.1:8b
+```
+
+Launch the dashboard
+
+```bash
+streamlit run Dashboard/app.py
+```
+
+---
+
+# Future Improvements
+
+- LangGraph-based orchestration
+- Multi-agent collaboration
+- Scheduled autonomous monitoring
+- Real-time news ingestion
+- Financial forecasting
+- Knowledge graph integration
+- Explainable reasoning traces
+- Multi-company strategic analysis
+
+---
+
+# Author
+
+**Sharvari S**
+
+M.Sc. Applied Data Science & Artificial Intelligence
+
+SRH University Heidelberg
+
+---
+```
+> **Note:** This project demonstrates an **agentic AI architecture**, where the system autonomously plans, retrieves, reasons, validates, and generates strategic recommendations rather than simply answering user prompts.
