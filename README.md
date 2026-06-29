@@ -88,47 +88,31 @@ flowchart LR
     W --> X[Streamlit Dashboard]
 ```
 
-The agent uses a fixed broad query covering all strategic dimensions — opportunities, risks, trends, competitors, hydrogen, AI, supply chain. It retrieves the top 15 chunks, reranks to the best 5, classifies them into intelligence signals, then instructs Llama to produce a structured 7-section CEO report autonomously.
+1. `DataScraping/run_collection.py` collects Airbus-related data and writes source-specific JSONL files plus `all_documents.jsonl`.
+2. `DataCleaning/data_clean.py` removes boilerplate, drops low-quality or irrelevant documents, deduplicates titles, assigns strategic topics, and creates retrieval-ready chunks.
+3. `VectorDB/store_to_chroma.py` embeds each cleaned chunk with `BAAI/bge-small-en-v1.5` and stores the chunk text, metadata, and vector in ChromaDB.
 
----
+#### Runtime RAG and Agent Pipeline
 
-## Key Design Decisions
-
-**1. Pre-generate, then display** — The heavy pipeline (RAG + Ollama) runs offline via `generate_report.py`. The dashboard reads the saved JSON instantly, keeping the UI responsive.
-
-**2. Retrieve then rerank** — Vector search retrieves a wide candidate set fast; the cross-encoder reranker then improves precision before the LLM sees the evidence.
-
-**3. Evidence-constrained prompting** — The prompt explicitly instructs Llama to use only retrieved evidence and cite source titles, reducing hallucination and making recommendations traceable.
-
-**4. Autonomous agent design** — No user query is needed. The agent reasons freely over all retrieved evidence and decides what to report — behaving like an always-on intelligence advisor.
-
-**5. Local LLM** — `llama3.1:8b` runs locally through Ollama, keeping the corpus private with no dependency on commercial APIs.
-
----
-
-## Dashboard Sections
-
-| Tab | What it shows |
-|---|---|
-| 📌 Company Overview | KPIs, stock price, source breakdown |
-| 📊 Market Intelligence | Charts, 90-day stock, live news/competitor/tech feeds |
-| 😊 Sentiment Analysis | Polarity by source/topic, stock + sentiment overlay |
-| 🚀 Opportunities | Evidence-backed cards with impact level and confidence |
-| ⚠️ Risks & Trends | Risk and trend cards with severity |
-| 🎯 Recommendations | LLM strategic recommendations |
-| 🧠 CEO Briefing | What happened · Why it matters · What to do next |
-
----
-
-## Setup & Run
-
-```bash
-pip install -r requirements.txt
-# add GUARDIAN_API_KEY to .env (free key at open-platform.theguardian.com)
-
-python DataScraping/run_collection.py   # collect data
-python DataCleaning/data_clean.py       # clean & chunk
-python VectorDB/store_to_chroma.py      # embed & index
-python generate_report.py              # run CEO agent (needs Ollama running)
-streamlit run Dashboard/app.py         # launch dashboard
+```mermaid
+flowchart LR
+    Q["Strategic query"] --> R["Embed query"]
+    R --> S["Retrieve top candidates from ChromaDB"]
+    S --> T["Deduplicate by title"]
+    T --> U["Cross-encoder rerank"]
+    U --> V["Opportunity/risk/trend scoring"]
+    V --> W["Build executive prompt"]
+    W --> X["Generate report with llama3.1:8b"]
+    X --> Y["Save reports/latest_report.json"]
+    Y --> Z["Display in Streamlit dashboard"]
 ```
+
+- `RAG/retriever.py` embeds the query and retrieves matching chunks from ChromaDB.
+- `RAG/reranker.py` reranks candidate chunks using `cross-encoder/ms-marco-MiniLM-L-6-v2`.
+- `StrategicIntelligenceEngine/strategic_analyzer.py` scores chunks for opportunities, risks, and trends using weighted strategic keywords.
+- `RAG/prompt_builder.py` builds a structured CEO-report prompt with evidence snippets and detected intelligence signals.
+- `CEOAgent/ceo_agent.py` runs the autonomous strategic query and calls the local LLM through `CEOAgent/llm_agent.py`.
+- `generate_report.py` saves the generated report and supporting evidence to `reports/latest_report.json`.
+- `Dashboard/app.py` displays the report, opportunities, risks, trends, recommendations, sentiment analysis, stock chart, source mix, and recent intelligence feeds.
+
+---
