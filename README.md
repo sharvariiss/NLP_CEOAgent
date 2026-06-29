@@ -311,25 +311,18 @@ Example questions:
 ```
 .
 ├── CEOAgent/
-│   ├── goal.py
-│   ├── planner.py
-│   ├── analyzer.py
-│   ├── decision.py
-│   ├── recommender.py
-│   ├── validator.py
+│   ├── ceo_agent.py
 │   └── llm_agent.py
 │
 ├── RAG/
 │   ├── retriever.py
 │   ├── reranker.py
-│   ├── embeddings.py
-│   └── vectorstore.py
+│   ├── prompt_builder.py
+│   └── query_engine.py
 │
 ├── Dashboard/
 │   ├── app.py
-│   ├── qa_page.py
-│   ├── overview.py
-│   └── pages/
+│   └── qa_page.py
 │
 ├── DataScraping/
 │
@@ -385,27 +378,12 @@ streamlit run Dashboard/app.py
 
 ---
 
-# Future Improvements
-
-- LangGraph-based orchestration
-- Multi-agent collaboration
-- Scheduled autonomous monitoring
-- Real-time news ingestion
-- Financial forecasting
-- Knowledge graph integration
-- Explainable reasoning traces
-- Multi-company strategic analysis
-
----
-
 # Author
 
-**Sharvari S**
+**Sharvari Shewdikar**
 
 M.Sc. Applied Data Science & Artificial Intelligence
 
 SRH University Heidelberg
 
 ---
-```
-> **Note:** This project demonstrates an **agentic AI architecture**, where the system autonomously plans, retrieves, reasons, validates, and generates strategic recommendations rather than simply answering user prompts.
